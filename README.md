@@ -15,7 +15,7 @@ https://bitbucket.org/dynall/winding_number_homework/src/master/
 
 ## Getting Started
 
-> ℹ️ The solution has been implemented on the following system.  
+> :point_right: The solution has been implemented on the following system.  
 > It will be relatively portable to other systems, but has not yet been tested and validated for portability.
 
 - Fedora 38
@@ -28,8 +28,12 @@ https://bitbucket.org/dynall/winding_number_homework/src/master/
 - GTX 1060
 - Intel 6700k
 
+### Install SFML Library
 > :exclamation:  SFML Library  
-> An additional library (SFML) was added to enable visualization of the polygons and points. The SFML library can be downloaded and installed [here](https://www.sfml-dev.org/download.php). Or using :
+> An additional library (SFML) was added to enable visualization of the polygons and points.  
+> The SFML library can be downloaded and installed [here](https://www.sfml-dev.org/download.php).  
+> Or through the terminal :
+
 ```shell
 # Fedora
 sudo dnf install SFML-devel
@@ -38,6 +42,19 @@ sudo dnf install SFML-devel
 sudo apt-get install libsfml-dev
 ```
 
+### Update CUDA Architecture
+In [CMakeLists.txt](CMakeLists.txt) update the following line to compile for the correct CUDA architecture.  
+```cmake
+# For GTX 10 series cards (pascal sm_61)
+set(CMAKE_CUDA_ARCHITECTURES 61)
+```
+[Matching CUDA arch and CUDA gencode](https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/)
+
+| Fermi | Kepler | Maxwell | Pascal | Volta          | Turing | Ampere       | Ada (Lovelace) | Hopper        |
+|-------|--------|---------|--------|----------------|--------|--------------|----------------|---------------|
+| sm_20 | sm_30  | sm_50   | sm_60  | sm_70          | sm_75  | sm_80        | sm_89          | sm_90         |
+|       | sm_35  | sm_52   | sm_61  | sm_72 (Xavier) |        | sm_86        |                | sm_90a (Thor) |
+|       | sm_37  | sm_53   | sm_62  |                |        | sm_87 (Orin) |                |               |
 # Directory
 
 - **Common** -- macros and wrappers for cuda functions
@@ -61,7 +78,7 @@ sudo apt-get install libsfml-dev
   - [poly_io.cpp](src/poly_io.cpp)
   - [polycreator.cpp](src/poly_creator.cpp)
 
-> Note : The Visualizer class does not correctly account for non-simple polygons
+> :point_right: The Visualizer class DOES NOT display non-simple polygons correctly
 > but they are still correctly assessed in the winding-number algorithm.  
 > In order to correctly display non-simple polygons they will need to be broken into
 > component polygons which can be displayed independently.
