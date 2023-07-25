@@ -1,9 +1,6 @@
-//
-// Created by john on 7/20/23.
-//
 
-#ifndef WINDING_NUMBER_HOMEWORK_POLYCREATOR_HPP
-#define WINDING_NUMBER_HOMEWORK_POLYCREATOR_HPP
+#ifndef POLY_CREATOR_HPP
+#define POLY_CREATOR_HPP
 
 #include "poly_io.hpp"
 
@@ -21,4 +18,4 @@ namespace poly {
 
 } // --- END namespace poly
 
-#endif  // WINDING_NUMBER_HOMEWORK_POLYCREATOR_HPP
+#endif  // POLY_CREATOR_HPP

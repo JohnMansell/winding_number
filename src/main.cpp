@@ -1,6 +1,6 @@
 #include "poly_io.hpp"
 #include "winding.hpp"
-#include "Visualizer.h"
+#include "visualizer.h"
 #include "common.cuh"
 #include "logging.h"
 #include "gpu_winding_number.cuh"
@@ -11,30 +11,6 @@
 using namespace poly;
 using namespace std;
 using namespace std::chrono;
-
-ostream& operator<<(ostream& os, const Polygon& poly) {
-    for (size_t i=0; i<poly.size(); i++)
-        os << "(" << poly.x_vec_[i] << "," << poly.y_vec_[i] << ") ";
-
-    return os;
-}
-
-template <class... Args>
-ostream& operator<<(ostream& os, tuple<Args...> const& t) {
-    os << "(";
-    bool first = true;
-    apply([&os, &first](auto&&... args) {
-        auto print = [&] (auto&& val) {
-            if (!first)
-                os << ",";
-            (os << " " << val);
-            first = false;
-        };
-        (print(args), ...);
-    }, t);
-    os << " )";
-    return os;
-}
 
 typedef std::tuple<float, float, Polygon> point_n_poly;
 
@@ -53,7 +29,7 @@ double cpu_batch_timing(float *x_vals, float *y_vals, std::vector<point_n_poly> 
 
     // --- Microseconds
     auto stop = high_resolution_clock::now();
-    return duration<double, milli>(stop - start).count();
+    return duration<double, micro>(stop - start).count();
 }
 
 
@@ -62,6 +38,8 @@ int main(int nargs, char* args[], char* env[]) {
     // --- Read Polygons from File
     auto poly_reader = IPolygonReader::Create();
     const auto polygons = poly_reader->ReadPointsAndPolygonsFromFile("../test/polygons.txt");
+
+    // --- Create CPU & GPU solvers
     auto winding_algo = winding_number::IWindingNumberAlgorithm::Create();
     auto gpu_solver = GPU_Winding_Number_Solver();
 
@@ -72,7 +50,7 @@ int main(int nargs, char* args[], char* env[]) {
     {
         wind = winding_algo->CalculateWindingNumber2D(x, y, poly);
         if (wind)
-            __logDebug("%s Winding number = %d", poly.title.c_str(), *wind);
+            __logDebug("Title = %s. winding_num[%d]", poly.title.c_str(), *wind);
         else
             __logError("Error = %s\n", winding_algo->error_message().c_str());
 
@@ -87,9 +65,9 @@ int main(int nargs, char* args[], char* env[]) {
 
     // --- Allocate Managed Memory
     const size_t N = 1 << 16;
+    int cpu_results[N] = {0};
     float *x_vals = __gpuMallocManaged(N);
     float *y_vals = __gpuMallocManaged(N);
-    int cpu_results[N] = {0};
     int *gpu_results = __gpuMallocManaged(N);
 
     // --- Generate Random Values
@@ -115,8 +93,8 @@ int main(int nargs, char* args[], char* env[]) {
         gpu_total += gpu_solver.CalculateWindingNumber2D(x_vals, y_vals, gpu_results, poly, N);
     }
 
-    __logAlways("CPU Time(%cs) = %11.2f/(%lu points * %d polygons). Ave = %f", 0xCE, cpu_total, N, polygons.size(), cpu_total / (N * polygons.size()));
-    __logAlways("GPU Time(%cs) = %11.2f/(%lu points * %d polygons). Ave = %f", 0xCE, gpu_total, N, polygons.size(), gpu_total / (N * polygons.size()));
+    __logAlways("CPU Time(µs) = %11.2f/(%lu points * %d polygons). Ave = %f µs", cpu_total, N, polygons.size(), cpu_total / (N * polygons.size()));
+    __logAlways("GPU Time(µs) = %11.2f/(%lu points * %d polygons). Ave = %f µs", gpu_total, N, polygons.size(), gpu_total / (N * polygons.size()));
 
     return 0;
 }

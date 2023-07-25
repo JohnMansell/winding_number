@@ -1,7 +1,3 @@
-//
-// Created by john on 7/19/23.
-//
-
 #include "winding.hpp"
 
 

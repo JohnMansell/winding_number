@@ -1,7 +1,3 @@
-//
-// Created by john on 7/24/23.
-//
-
 #include "common.cuh"
 #include "logging.h"
 #include <cuda_runtime.h>

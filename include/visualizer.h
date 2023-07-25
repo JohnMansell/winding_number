@@ -1,6 +1,3 @@
-//
-// Created by john on 7/18/23.
-//
 
 #ifndef WINDING_NUMBER_HOMEWORK_VISUALIZER_H
 #define WINDING_NUMBER_HOMEWORK_VISUALIZER_H
@@ -14,6 +11,16 @@
 
 using namespace poly;
 
+/**
+ * Visualizer class creates a window using the SFML Library. It can take in a new polygon defined by a set of
+ * vertices. The polygon is displayed on the window. Clicking anywhere on the window will advance to the next
+ * (point, polygon) pair.
+ *
+ * The polygon title (if available) is displayed as the window title
+ *
+ * --- Note ----
+ * Visualizer does NOT account for non-simple polygons
+ */
 class Visualizer {
 public:
     Visualizer();

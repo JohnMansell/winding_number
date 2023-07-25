@@ -1,11 +1,8 @@
-//
-// Created by john on 7/18/23.
-//
 #ifndef __VISUALIZER__H_
 #define __VISUALIZER__H_
 
 #include <SFML/Graphics.hpp>
-#include "Visualizer.h"
+#include "visualizer.h"
 #include "logging.h"
 
 using namespace std;
@@ -182,6 +179,7 @@ void Visualizer::new_polygon(const Polygon& poly) {
         return;
     }
 
+    // ToDo : decompose non-simple polygons into components before passing to display
     // --- Normal Case : Polygon
     auto shape = sf::ConvexShape();
 

@@ -3,14 +3,13 @@ cmake_minimum_required(VERSION 3.24)
 # -----------------------------------
 #             CUDA OPTIONS
 # -----------------------------------
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 set(CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS ON)
-set(CMAKE_CUDA_ARCHITECTURES 60)
 set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+set(CMAKE_CUDA_ARCHITECTURES 60)
 
 # --- Project
 project(winding_number_homework LANGUAGES CXX CUDA)
@@ -25,10 +24,10 @@ add_compile_definitions("$<$<CONFIG:DEBUG>:__DEBUG__>")
 
 
 # --- Common
-#add_library(common OBJECT src/common.cu)
+add_library(common_lib OBJECT src/common.cu)
 
 # --- Logging
-add_library(logging OBJECT src/logging.cu)
+add_library(logging_lib OBJECT src/logging.cu)
 
 
 include(GoogleTest)
@@ -46,24 +45,22 @@ set(VIS_LIBRARIES
 set(WINDING_NUMBER_INC
         include/poly_io.hpp
         include/winding.hpp
-        include/Visualizer.h
-        include/polycreator.hpp
+        include/visualizer.h
+        include/poly_creator.hpp
         include/gpu_winding_number.cuh
-        include/common.cuh
 )
 
 set(WINDING_NUMBER_SRC
         src/poly_io.cpp
         src/visualizer.cpp
         src/better_winding.cpp
-        src/polycreator.cpp
+        src/poly_creator.cpp
         src/gpu_winding_number.cu
-        src/common.cu
 )
 
 add_library(winding_lib STATIC ${WINDING_NUMBER_SRC} ${WINDING_NUMBER_INC})
 target_include_directories(winding_lib PUBLIC include)
-target_link_libraries(winding_lib PUBLIC logging)
+target_link_libraries(winding_lib PUBLIC logging_lib common_lib)
 
 # a main that is callable from a console
 set(WINDING_NUMBER_MAIN

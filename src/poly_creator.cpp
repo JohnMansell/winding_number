@@ -1,11 +1,7 @@
-//
-// Created by john on 7/20/23.
-//
 
 #include <deque>
 #include <c++/12/iostream>
-#include "polycreator.hpp"
-
+#include "poly_creator.hpp"
 
 namespace poly {
 
@@ -197,4 +193,4 @@ Polygon Poly_Creator::construct_poly(const std::vector<Point> &points) {
 } // --- END namespace poly
 
 
-#include "polycreator.hpp"
+#include "poly_creator.hpp"

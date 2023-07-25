@@ -2,12 +2,13 @@
 // --- CUDA
 #include "cuda.h"
 #include <cooperative_groups.h>
-#include <cooperative_groups/memcpy_async.h>
 
 // --- Project Headers
 #include "gpu_winding_number.cuh"
 #include "common.cuh"
 #include "logging.h"
+
+#define BLOCK_SIZE 256
 
 using namespace cooperative_groups;
 
@@ -138,7 +139,7 @@ float GPU_Winding_Number_Solver::CalculateWindingNumber2D(float *x_vals, float *
     __gpuMemcpy(d_polygon, h_polygon, polygon.size());
 
     // --- Kernel Parameters
-    dim3 block(512);
+    dim3 block(BLOCK_SIZE);
     dim3 grid;
     grid.x = (count_points / block.x) + 1 * ((count_points % block.x) != 0);
 

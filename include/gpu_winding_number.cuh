@@ -1,6 +1,3 @@
-//
-// Created by john on 7/23/23.
-//
 
 #ifndef GPU_WINDING_NUMBER_CUH
 #define GPU_WINDING_NUMBER_CUH

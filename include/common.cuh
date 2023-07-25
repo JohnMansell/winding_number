@@ -1,6 +1,3 @@
-//
-// Created by john on 7/24/23.
-//
 
 #ifndef COMMON_CUH
 #define COMMON_CUH
