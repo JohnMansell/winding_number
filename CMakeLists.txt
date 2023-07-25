@@ -1,24 +1,69 @@
-project(winding_number_homework LANGUAGES CXX)
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.24)
 
-set(CMAKE_CXX_STANDARD 17)
+# -----------------------------------
+#             CUDA OPTIONS
+# -----------------------------------
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
+set(CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+set(CMAKE_CUDA_ARCHITECTURES 60)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+
+# --- Project
+project(winding_number_homework LANGUAGES CXX CUDA)
+include_directories(
+        ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+        include
+)
+
+
+# --- Debug Options
+add_compile_definitions("$<$<CONFIG:DEBUG>:__DEBUG__>")
+
+
+# --- Common
+#add_library(common OBJECT src/common.cu)
+
+# --- Logging
+add_library(logging OBJECT src/logging.cu)
+
 
 include(GoogleTest)
 enable_testing()
 
+# --- SMFL Visualization Library
+find_package(SFML REQUIRED COMPONENTS system window graphics)
+set(VIS_LIBRARIES
+        sfml-system
+        sfml-window
+        sfml-graphics
+)
+
 # the guts of the library that computes winding number
 set(WINDING_NUMBER_INC
-  include/poly_io.hpp
-  include/winding.hpp
+        include/poly_io.hpp
+        include/winding.hpp
+        include/Visualizer.h
+        include/polycreator.hpp
+        include/gpu_winding_number.cuh
+        include/common.cuh
 )
 
 set(WINDING_NUMBER_SRC
-  src/poly_io.cpp
-  src/winding.cpp
+        src/poly_io.cpp
+        src/visualizer.cpp
+        src/better_winding.cpp
+        src/polycreator.cpp
+        src/gpu_winding_number.cu
+        src/common.cu
 )
 
 add_library(winding_lib STATIC ${WINDING_NUMBER_SRC} ${WINDING_NUMBER_INC})
 target_include_directories(winding_lib PUBLIC include)
+target_link_libraries(winding_lib PUBLIC logging)
 
 # a main that is callable from a console
 set(WINDING_NUMBER_MAIN
@@ -26,8 +71,7 @@ set(WINDING_NUMBER_MAIN
 )
 
 add_executable(winding_number ${WINDING_NUMBER_MAIN})
-
-target_link_libraries(winding_number PRIVATE winding_lib)
+target_link_libraries(winding_number PRIVATE winding_lib ${VIS_LIBRARIES})
 
 # unit tests for the winding number homework problem
 set(GTEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest)

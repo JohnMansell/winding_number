@@ -2,11 +2,65 @@
 #define POLY_IO_HPP_
 
 #include <memory>
+#include <string>
 #include <string_view>  // A C++17 capable compiler is assumed here.
 #include <tuple>
 #include <vector>
+#include <cmath>
+#include <unordered_map>
 
 namespace poly {
+
+#define RESOLUTION 0.000001
+
+    struct Point {
+        float x;
+        float y;
+
+        Point(float x_, float y_) : x(x_), y(y_) {}
+
+        bool operator==(const Point& other) const {
+            float distance = sqrt(pow(other.x - x, 2) + pow(other.y - y, 2));
+            return distance <= RESOLUTION;
+        }
+
+        bool operator!=(const Point& other) const {
+            return !(*this == other);
+        }
+
+        // Custom hash function for Point(X,Y)
+        struct Hash {
+            size_t operator()(const Point& p) const {
+                size_t h1 = std::hash<float>{}(p.x);
+                size_t h2 = std::hash<float>{}(p.y);
+                return h1 ^ (h2 << 1);
+            }
+        };
+    };
+
+    struct Vertex {
+
+        float x;
+        float y;
+
+        Point point() const {return {x, y};};
+
+        Vertex(){
+            x = INFINITY;
+            y = INFINITY;
+        }
+
+        Vertex(const Point p) : x(p.x), y(p.y) {}
+        Vertex(float x_, float y_) : x(x_), y(y_) {}
+
+        std::unordered_map<Point, std::shared_ptr<Vertex>, Point::Hash> neighbors;
+
+        bool is_colinear(const std::shared_ptr<Vertex>& prev, const std::shared_ptr<Vertex>& next) {
+            float crossProduct = (x - prev->x) * (next->y - prev->y) - (y - prev->y) * (next->x - prev->x);
+            return std::abs(crossProduct) < 0.0001f;
+        }
+
+    };
 
 // Polygon represents a polygon in 2 dimensions, and is specified as an ordered series of points.
 struct Polygon {
@@ -19,12 +73,14 @@ struct Polygon {
     void ClosePolygon();
 
     // Detects whether the last point in the polygon is the same of the first, up to some tolerance.
-    bool IsClosed(float tolerance = 0.f) const;
+    bool IsClosed(float tolerance = RESOLUTION) const;
 
     // data members
     std::vector<float> x_vec_;
     std::vector<float> y_vec_;
+    std::string title;
 };
+
 
 // TODO: Implement a slightly more resilient subclass of IPolygonReader and change IPolygonReader::Create() to return
 // it. Hint, it could be made a bit more tolerant of "bad" or otherwise unexpected input.
