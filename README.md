@@ -28,11 +28,10 @@ https://bitbucket.org/dynall/winding_number_homework/src/master/
 - GTX 1060
 - Intel 6700k
 
-### Install SFML Library
-> :exclamation:  SFML Library  
-> An additional library (SFML) was added to enable visualization of the polygons and points.  
-> The SFML library can be downloaded and installed [here](https://www.sfml-dev.org/download.php).  
-> Or through the terminal :
+### :exclamation: Install SFML Library
+An additional library (SFML) was added to enable visualization of the polygons and points.  
+The SFML library can be downloaded and installed [here](https://www.sfml-dev.org/download.php).  
+Or through the terminal :
 
 ```shell
 # Fedora
@@ -41,8 +40,16 @@ sudo dnf install SFML-devel
 # Ubuntu
 sudo apt-get install libsfml-dev
 ```
-
-### Update CUDA Architecture
+Ensure CMake can locate the SFML Library
+```cmake
+find_package(SFML REQUIRED COMPONENTS system window graphics)
+set(VIS_LIBRARIES
+        sfml-system
+        sfml-window
+        sfml-graphics
+)
+```
+### :exclamation: Update CUDA Architecture
 In [CMakeLists.txt](CMakeLists.txt) update the following line to compile for the correct CUDA architecture.  
 ```cmake
 # For GTX 10 series cards (pascal sm_61)
